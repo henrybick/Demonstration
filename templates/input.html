@@ -1,0 +1,164 @@
+<html>
+    <style type="text/css">
+    .main{
+        background: white;
+        position: absolute;
+        top: 35%;
+        left: 35%;
+
+    }
+
+    /* Top panel : #navbar, #toolbar */
+    .top_panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: block;
+      font-size: medium;
+      background-color: #52c2ca;
+      color: #f2f2f2;
+      z-index: 10;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      }
+
+      .navbar {
+      display: inline-block;
+      }
+      .navbar ul {
+      display: inline;
+      list-style-type: none;
+      overflow: hidden;
+      }
+      .navbar li {
+      float: left;
+      }
+      .navbar li a, .drop_menu_item {
+      display: inline-block;
+      color: #f2f2f2;
+      padding: 0.65em 1.2em;
+      text-decoration: none;
+      }
+      .navbar li a:hover, .dropdown:hover {
+      background-color: #52c2ca;
+      cursor: pointer;
+      }
+      .navbar li.dropdown {
+      display: inline-block;
+      }
+      .navbar .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #52c2ca;
+      min-width: 120px;
+      border: 1px solid #ffffff;
+      font-size: small;
+      }
+      .navbar .dropdown-content a {
+      color: #ffffff;
+      padding: 0.4em 0.6em;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      background-color: #52c2ca;
+      float: none;
+      }
+      .navbar .dropdown-content a:hover {
+      background-color: #000000;
+      color: #ffff00;
+      }
+      .navbar .dropdown:hover .dropdown-content {
+      display: block;
+      }
+
+      .toolbar {
+      display: inline-block;
+      color: #f2f2f2;
+      vertical-align: top;
+      }
+      .toolbar ul {
+      display: inline;
+      list-style-type: none;
+      overflow: hidden;
+      }
+      .toolbar li {
+      font-size: medium;
+      float: left;
+      padding: 0.65em 0.3em;
+      color: #f2f2f2;
+      }
+      .toolbar li:hover {
+      background-color: #333333;
+      color: red;
+      cursor: pointer;
+      }
+
+      #fileinfo {
+      font-size: small;
+      padding: 1.2em 0.8em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      }
+
+    </style>
+    
+    <script>
+        function home(){
+            window.location='/annotator/'
+        }
+        function remove_outside_region(){
+            window.location='/background/';
+        }
+        function remove_background(){
+            window.location='/nbackground/';
+        }
+        function binary_mask(){
+            window.location='/binarymask/';
+        }
+        function nbtrain(){
+            window.location='/nbtrain';
+        }
+        function multitrain(){
+        window.location='/multitrain';
+        }
+        function uploaddataset(){
+            window.location='/uploaddataset';
+        }
+    </script>
+
+    <div class="top_panel" id="ui_top_panel">      
+        <!-- Navigation menu -->
+        <div class="navbar">
+          <ul>
+            <li><a onclick="home()" title="Home">Home</a></li>
+            <li class="dropdown"><a onclick="show_ml_panel()" title="Image Processing">Image Processing &#9662;</a>
+                <div class="dropdown-content">
+                  <a onclick="remove_outside_region()" title="Removing the area outside a selected region">Only Show Region</a>
+                  <a onclick="remove_background()" title="Removing the background of an image using a trained model">Naive Bayes Classifier</a>
+                  <a onclick="binary_mask()" title="Create a binary mask of an image">Create Binary Mask</a>
+                  <a onclick="nbtrain()" title="Train a naive bayes model">Train a Model</a>
+                  <a onclick="multitrain()" title="Train a naive bayes model for multiclass use">Train a Multiclass Model</a>
+                  <a onclick="uploaddataset()" title="Upload a dataset for use in model training">Upload Dataset</a>
+                </div>
+            </li>
+          </ul>
+  
+        </div>
+    </div>
+
+    <body>
+    
+    <div class="main">
+        <form action="/result/" method = "POST" enctype="multipart/form-data">
+            <p>Upload an image and the CSV file containing 1 set of region coordinates <br>
+            to crop the image.CSV files can be downloaded from the annotation tool <br>
+            under "Annotation":</p>
+            <p>Filename: <input type =file name =image accept = "image"/></p>
+            <p>CSV filename: <input type =file name =csv accept = ".csv"/></p>
+            <p><input type = "submit" value = "Submit"/></p>
+        </form>
+    </div>
+    </body>
+</html>
