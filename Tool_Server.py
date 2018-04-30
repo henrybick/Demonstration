@@ -22,6 +22,7 @@ import PIL
 from matplotlib.path import Path
 from itertools import izip_longest
 
+#Upload paths for files uploaded by the user, must be local to the server file
 UPLOAD_FOLDER = os.path.basename('uploads')
 RGB_UPLOAD_FOLDER = os.path.basename('input-images-uploads')
 MASK_UPLOAD_FOLDER = os.path.basename('mask-images-uploads')
@@ -31,37 +32,42 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['RGB_UPLOAD_FOLDER'] = RGB_UPLOAD_FOLDER
 app.config['MASK_UPLOAD_FOLDER'] = MASK_UPLOAD_FOLDER
  
+#Title page containing the choice of going to the application or the application source code
 @app.route('/')
 def titlepage():
     return render_template('titlepage.html')
 
+#The annotation tool itself 
 @app.route('/annotator/')
 def annotator():
     return render_template('annotator.html')
 
-@app.route('/annotatorcode/')
-def annotatorcode():
-    return render_template('annotatorcode.html')
-
+#The cropping/manual background removal tool's input page where the user uploads an image and CSV file
 @app.route('/background/')
 def input_background():
     return render_template('input.html')
 
+#The naive bayes background removal feature allowing the user to remove an images background based on a model (PDF txt file)
 @app.route('/nbackground/')
 def input_nb():
     return render_template('nbinput.html')
 
+#Page where the user can input a singular image to create a binary mask of that image
 @app.route('/binarymask/')
 def input_binarymask():
     return render_template('bminput.html')
 
+#Where the user can upload datasets for Naive Bayes model training, allows input of a set of RGB images and binary mask images
 @app.route('/uploaddataset' , methods =['POST', 'GET'])
 def upload_input_image_set():
     return render_template('inputimageset.html')
 
+#Cropping feature for manually removing the background of images
+#Parts of code referenced to (https://github.com/tap222/extreme_edge_image/blob/69983f7dfdcda25a99e268d099ffea6945d194b4/extract_portion_from_image.py)
 @app.route('/result', methods = ['POST', 'GET'])
 def remove_background():
 
+    #Uploading all files posted by the user on the input page to the upload directory
     if request.method == 'POST':
         imagefile = request.files['image']
         csvfile = request.files['csv']
@@ -74,12 +80,10 @@ def remove_background():
 
         print("Files uploaded successfully")
 
-    #Reading in the initial colour image
     img, path, filename = pcv.readimage(i)
 
     #Converting the CSV file to a txt file
     convert_csv(csvfile.filename)
-
     fn = csvfile.filename.split(".")[0]
     plotstextfilename = fn + ".txt"
 
@@ -112,6 +116,7 @@ def remove_background():
     #Returning the template and image
     return render_template("result.html", image = outimage)
 
+#Naive Bayes background removal using a model
 @app.route('/nbresult', methods = ['POST', 'GET'])
 def naive_bayes():
 
@@ -127,7 +132,6 @@ def naive_bayes():
 
         print("Files uploaded successfully")
 
-    #Reading in the image
     img, path, filename = pcv.readimage(i)
 
     #Creating the mask from the base image and the model
@@ -148,6 +152,7 @@ def naive_bayes():
     #Returning the template and image
     return render_template("result.html", image = outimage)
 
+#Taking a user provided image and turning it into a binary mask version of the same image
 @app.route('/bmresult', methods =['POST', 'GET'])
 def binary_mask():
 
@@ -159,21 +164,13 @@ def binary_mask():
 
         print("Files uploaded successfully")
 
-    #Reading in the image
     img, path, filename = pcv.readimage(i)
 
-    #Defining easier to use names
     names = {"h": "hue", "s": "saturation", "v": "value"}
 
-    #Converting the image from BGR to HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-    #Spliting the h, s, v values up from eachother
     h, s, v = cv2.split(hsv)
-
-    #Defining the channels for easier use
     channels = {"h": h, "s": s, "v": v}
-
     s = channels["s"]
 
     #Creating the binary threshold image using the channel, the threshold, the max value, and the object type
@@ -189,7 +186,8 @@ def binary_mask():
     #Returning the template and image
     return render_template("result.html", image = outimage)
 
-@app.route('/inputimageresult' , methods =['POST', 'GET'])
+#Handling the uploading of datasets for use with the naive bayes classifier, then giving confirmation to the user after a succesful upload
+@app.route('/successfulupload' , methods =['POST', 'GET'])
 def imageset_result():
     if request.method == 'POST':
 
@@ -206,6 +204,7 @@ def imageset_result():
 
     return "Files uploaded successfully"
 
+#Specifying the RGB and mask directories to train a Naive bayes model, resulting file is output to the users browser
 @app.route('/nbtrain', methods =['POST', 'GET'])
 def nbtrain():
     inputimages = "./uploads/input-images"
@@ -215,6 +214,7 @@ def nbtrain():
 
     return send_from_directory(directory=UPLOAD_FOLDER, filename=outfile, as_attachment=True)
 
+#Training a multiclass model, accepts JSON rather than CSV and outputs the resulting model to the users browser
 @app.route('/multitrain', methods =['POST', 'GET'])
 def multitrain():
 
@@ -230,7 +230,6 @@ def multitrain():
 
         print("Files uploaded successfully")
 
-    inputimage = i
     inputjson = j
     outfile = "multitestpdf.txt"
 
@@ -240,16 +239,11 @@ def multitrain():
 
     return send_from_directory(directory=UPLOAD_FOLDER, filename=outfile, as_attachment=True)
 
-def get_values(filename):
-    with open(filename) as f:
-        l = f.readlines()
-    return [tuple(map(int, x.replace('\n', '').split(', '))) for x in l[1:]]
-
+#functions to convert an existing CSV file to txt format, keeping the region's x and y coordinates for further use
 def convert_csv(csv_filename):
     rootDir ="."
     for root, dir, files in os.walk(rootDir):
         for name in files:
-            #print('files\t%s' % name)
             if fnmatch.fnmatch(name, csv_filename):
                 stem = []
                 name = os.path.join(root, name)
@@ -270,17 +264,22 @@ def convert_csv(csv_filename):
                 stem_file_name =name+ ".txt"    
                 file =open(stem_file_name,"w")
                 file.write("x,y\n")
+                #OrderedDict is used so the values stay in the specific order and the overall shape is retained
                 stem = list(OrderedDict.fromkeys(stem))
                 for s in stem:
-                    # print(c[0], c[1])
                     file.write(s+'\n')
                 file.close()
-                #print (stem)
+
+def get_values(filename):
+    with open(filename) as f:
+        l = f.readlines()
+    return [tuple(map(int, x.replace('\n', '').split(', '))) for x in l[1:]]
 
 def load_json(filename):
     with open(filename) as infile:
         return json.load(infile)
 
+#Converting JSON files to TSV format for use in multiclass model training
 def convert_json(filename):
     rawjson = load_json(filename)
     outputdict = {}
@@ -359,14 +358,8 @@ def output_tsv(*dicts):
             tsv_output.writerow(r)
     return filename
 
-#===========================================================================================================================#
-#===========================================================================================================================#
-#===========================================================================================================================#
-#===========================================================================================================================#
-#===========================================================================================================================#
-#===========================================================================================================================#
-
-
+#The main functions for training models for automatic background removal and for multiclass feature highlighting
+#Code extracted from the Naive Bayes classes of PlantCV library
 def naive_bayes_train(imgdir, maskdir, outfile, mkplots=False):
 
     # Initialize color channel ndarrays for plant (foreground) and background
