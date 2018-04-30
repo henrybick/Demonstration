@@ -120,7 +120,7 @@
             window.location='/nbtrain';
         }
         function multitrain(){
-        window.location='/multitrain';
+        window.location='/multiinput';
         }
         function uploaddataset(){
             window.location='/uploaddataset';
@@ -134,13 +134,13 @@
             <li><a onclick="home()" title="Home">Home</a></li>
             <li class="dropdown"><a onclick="show_ml_panel()" title="Image Processing">Image Processing &#9662;</a>
                 <div class="dropdown-content">
-                  <a onclick="remove_outside_region()" title="Removing the area outside a selected region">Only Show Region</a>
-                  <a onclick="remove_background()" title="Removing the background of an image using a trained model">Naive Bayes Classifier</a>
-                  <a onclick="binary_mask()" title="Create a binary mask of an image">Create Binary Mask</a>
-                  <a onclick="nbtrain()" title="Train a naive bayes model">Train a Model</a>
-                  <a onclick="multitrain()" title="Train a naive bayes model for multiclass use">Train a Multiclass Model</a>
-                  <a onclick="uploaddataset()" title="Upload a dataset for use in model training">Upload Dataset</a>
-                </div>
+                        <a onclick="uploaddataset()" title="Upload a dataset for use in model training">Upload Dataset</a>
+                        <a onclick="nbtrain()" title="Train a naive bayes model">Train a Model</a>
+                        <a onclick="multitrain()" title="Train a naive bayes model for multiclass use">Train a Multiclass Model</a>
+                        <a onclick="remove_background()" title="Removing the background of an image using a trained model">Background Removal</a>
+                        <a onclick="remove_outside_region()" title="Removing the area outside a selected region">Image Crop</a>
+                        <a onclick="binary_mask()" title="Create a binary mask of an image">Create Binary Mask</a>
+                    </div>
             </li>
           </ul>
   

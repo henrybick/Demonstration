@@ -62,6 +62,10 @@ def input_binarymask():
 def upload_input_image_set():
     return render_template('inputimageset.html')
 
+@app.route('/multiinput', methods =['POST', 'GET'])
+def upload_json_multiclass():
+    return render_template('multiinput.html')
+
 #Cropping feature for manually removing the background of images
 #Parts of code referenced to (https://github.com/tap222/extreme_edge_image/blob/69983f7dfdcda25a99e268d099ffea6945d194b4/extract_portion_from_image.py)
 @app.route('/result', methods = ['POST', 'GET'])
@@ -207,12 +211,12 @@ def imageset_result():
 #Specifying the RGB and mask directories to train a Naive bayes model, resulting file is output to the users browser
 @app.route('/nbtrain', methods =['POST', 'GET'])
 def nbtrain():
-    inputimages = "./uploads/input-images"
-    maskimages = "./uploads/mask-images"
-    outfile = "testpdf.txt"
+    inputimages = "./input-images-uploads"
+    maskimages = "./mask-images-uploads"
+    outfile = "NaiveBayesModel.txt"
     naive_bayes_train(inputimages, maskimages, outfile)
 
-    return send_from_directory(directory=UPLOAD_FOLDER, filename=outfile, as_attachment=True)
+    return send_from_directory(directory='.', filename=outfile, as_attachment=True)
 
 #Training a multiclass model, accepts JSON rather than CSV and outputs the resulting model to the users browser
 @app.route('/multitrain', methods =['POST', 'GET'])
@@ -230,10 +234,9 @@ def multitrain():
 
         print("Files uploaded successfully")
 
-    inputjson = j
-    outfile = "multitestpdf.txt"
+    outfile = "MulticlassModel.txt"
 
-    inputpdf = convert_json(inputjson)
+    inputpdf = convert_json(j)
 
     naive_bayes_multiclass(inputpdf, outfile)
 

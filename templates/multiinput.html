@@ -134,13 +134,13 @@
             <li><a onclick="home()" title="Home">Home</a></li>
             <li class="dropdown"><a onclick="show_ml_panel()" title="Image Processing">Image Processing &#9662;</a>
                 <div class="dropdown-content">
-                        <a onclick="uploaddataset()" title="Upload a dataset for use in model training">Upload Dataset</a>
-                        <a onclick="nbtrain()" title="Train a naive bayes model">Train a Model</a>
-                        <a onclick="multitrain()" title="Train a naive bayes model for multiclass use">Train a Multiclass Model</a>
-                        <a onclick="remove_background()" title="Removing the background of an image using a trained model">Background Removal</a>
-                        <a onclick="remove_outside_region()" title="Removing the area outside a selected region">Image Crop</a>
-                        <a onclick="binary_mask()" title="Create a binary mask of an image">Create Binary Mask</a>
-                    </div>
+                    <a onclick="uploaddataset()" title="Upload a dataset for use in model training">Upload Dataset</a>
+                    <a onclick="nbtrain()" title="Train a naive bayes model">Train a Model</a>
+                    <a onclick="multitrain()" title="Train a naive bayes model for multiclass use">Train a Multiclass Model</a>
+                    <a onclick="remove_background()" title="Removing the background of an image using a trained model">Background Removal</a>
+                    <a onclick="remove_outside_region()" title="Removing the area outside a selected region">Image Crop</a>
+                    <a onclick="binary_mask()" title="Create a binary mask of an image">Create Binary Mask</a>
+                </div>
             </li>
           </ul>
   
@@ -149,12 +149,10 @@
     <body>
     
     <div class="main">
-        <form action="/successfulupload" method = "POST" enctype="multipart/form-data">
-            <p>Upload a set of RGB and Binary Mask images for use in training a Naive Bayes model.<br>
-                Shift-click or Ctrl-click all the desired files in the file explorer.
-            </p>
-            <p>RGB Images: <input type=file name=image accept = "image" multiple/></p>
-            <p>Mask Images: <input type=file name=maskimage accept = "image" multiple/></p>
+        <form action="/multitrain" method = "POST" enctype="multipart/form-data">
+            <p>Upload a JSON file to train a multiclass model based on present features: <br></p>
+            <p>Image filename: <input type =file name =image accept = "image"/></p>
+            <p>JSON filename: <input type =file name =json accept = "JSON"/></p>
             <p><input type = "submit" value = "Submit"/></p>
         </form>
     </div>
