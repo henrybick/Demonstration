@@ -67,7 +67,7 @@ def upload_json_multiclass():
     return render_template('multiinput.html')
 
 #Cropping feature for manually removing the background of images
-#Parts of code referenced to (https://github.com/tap222/extreme_edge_image/blob/69983f7dfdcda25a99e268d099ffea6945d194b4/extract_portion_from_image.py)
+#Parts of code referenced to OpenCV documentation and tutorials
 @app.route('/imageresult', methods = ['POST', 'GET'])
 def remove_background():
 
@@ -144,6 +144,7 @@ def naive_bayes():
     
     #Applying the mask to the colour image
     device, masked_image = pcv.apply_mask(img, mask['plant'], 'white', device, debug="print")
+
 
     #Converting the image from a Numpy array to a Base64 string to allow the website to render it properly
     im = Image.fromarray(masked_image.astype("uint8"))
@@ -237,11 +238,11 @@ def multitrain():
 
     outfile = "MulticlassModel.txt"
 
-    inputpdf = convert_json(j)
+    inputpdf = convert_json(j, i)
 
     naive_bayes_multiclass(inputpdf, outfile)
 
-    return send_from_directory(directory=UPLOAD_FOLDER, filename=outfile, as_attachment=True)
+    return send_from_directory(directory='.', filename=outfile, as_attachment=True)
 
 #functions to convert an existing CSV file to txt format, keeping the region's x and y coordinates for further use
 def convert_csv(csv_filename):
@@ -284,7 +285,7 @@ def load_json(filename):
         return json.load(infile)
 
 #Converting JSON files to TSV format for use in multiclass model training
-def convert_json(filename):
+def convert_json(filename, imagefilename):
     rawjson = load_json(filename)
     outputdict = {}
     rgbdict = {}
@@ -314,7 +315,7 @@ def convert_json(filename):
         rgblist = []
         pts = np.array(outputdict[z])
 
-        img, path, filename = pcv.readimage("ogimage.png")
+        img, path, filename = pcv.readimage(imagefilename)
 
         #Creating mask arrays of 0's
         mask = np.zeros((img.shape[0], img.shape[1]))

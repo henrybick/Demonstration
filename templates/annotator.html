@@ -1092,23 +1092,26 @@ function import_attributes() {
     show_message("Please load some images first");
   }
 }
+function home(){
+  window.location='/annotator/'
+}
 function remove_outside_region(){
-  window.location='/background/';
+  window.location='/cropimage/';
 }
 function remove_background(){
-  window.location='/nbackground/';
+   window.location='/removebackgroundusingmodel/';
 }
 function binary_mask(){
-  window.location='/binarymask/';
+  window.location='/createbinarymask/';
 }
 function nbtrain(){
   window.location='/nbtrain';
 }
 function multitrain(){
-  window.location='/multitrain';
+  window.location='/trainmulticlassmodel';
 }
 function uploaddataset(){
-  window.location='/inputimageset';
+  window.location='/uploaddataset';
 }
 function show_about_panel() {
   set_all_text_panel_display('none');
