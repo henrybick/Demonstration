@@ -108,19 +108,19 @@
             window.location='/annotator/'
         }
         function remove_outside_region(){
-            window.location='/background/';
+            window.location='/cropimage/';
         }
         function remove_background(){
-            window.location='/nbackground/';
+            window.location='/removebackgroundusingmodel/';
         }
         function binary_mask(){
-            window.location='/binarymask/';
+            window.location='/createbinarymask/';
         }
         function nbtrain(){
             window.location='/nbtrain';
         }
         function multitrain(){
-        window.location='/multiinput';
+        window.location='/trainmulticlassmodel';
         }
         function uploaddataset(){
             window.location='/uploaddataset';
@@ -149,7 +149,7 @@
     <body>
     
     <div class="main">
-        <form action="/nbresult" method = "POST" enctype="multipart/form-data">
+        <form action="/binarymaskresult" method = "POST" enctype="multipart/form-data">
             <p>Upload an image to be turned into a binary mask version of the same image: <br></p>
             <p>Filename: <input type =file name =image accept = "image"/></p>
             <p><input type = "submit" value = "Submit"/></p>

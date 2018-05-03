@@ -9,16 +9,16 @@ import os
 import csv
 import ast
 import fnmatch
+import io
+import base64
+import json
+import PIL
 from collections import OrderedDict
 from scipy.misc import toimage
 from base64 import b64encode
-import io
-import base64
 from PIL import Image
 from werkzeug.utils import secure_filename  
 from scipy import stats 
-import json
-import PIL
 from matplotlib.path import Path
 from itertools import izip_longest
 
@@ -43,17 +43,17 @@ def annotator():
     return render_template('annotator.html')
 
 #The cropping/manual background removal tool's input page where the user uploads an image and CSV file
-@app.route('/background/')
+@app.route('/cropimage/')
 def input_background():
     return render_template('input.html')
 
 #The naive bayes background removal feature allowing the user to remove an images background based on a model (PDF txt file)
-@app.route('/nbackground/')
+@app.route('/removebackgroundusingmodel/')
 def input_nb():
     return render_template('nbinput.html')
 
 #Page where the user can input a singular image to create a binary mask of that image
-@app.route('/binarymask/')
+@app.route('/createbinarymask/')
 def input_binarymask():
     return render_template('bminput.html')
 
@@ -62,13 +62,13 @@ def input_binarymask():
 def upload_input_image_set():
     return render_template('inputimageset.html')
 
-@app.route('/multiinput', methods =['POST', 'GET'])
+@app.route('/trainmulticlassmodel', methods =['POST', 'GET'])
 def upload_json_multiclass():
     return render_template('multiinput.html')
 
 #Cropping feature for manually removing the background of images
 #Parts of code referenced to (https://github.com/tap222/extreme_edge_image/blob/69983f7dfdcda25a99e268d099ffea6945d194b4/extract_portion_from_image.py)
-@app.route('/result', methods = ['POST', 'GET'])
+@app.route('/imageresult', methods = ['POST', 'GET'])
 def remove_background():
 
     #Uploading all files posted by the user on the input page to the upload directory
@@ -90,9 +90,10 @@ def remove_background():
     convert_csv(csvfile.filename)
     fn = csvfile.filename.split(".")[0]
     plotstextfilename = fn + ".txt"
+    cp = os.path.join(app.config['UPLOAD_FOLDER'], plotstextfilename)
 
     #Reading in the converted CSV file into an array of plotted points
-    pts = np.array(get_values(plotstextfilename))
+    pts = np.array(get_values(cp))
 
     #Creating mask arrays of 0's
     mask = np.zeros((img.shape[0], img.shape[1]))
@@ -121,7 +122,7 @@ def remove_background():
     return render_template("result.html", image = outimage)
 
 #Naive Bayes background removal using a model
-@app.route('/nbresult', methods = ['POST', 'GET'])
+@app.route('/naivebayesresult', methods = ['POST', 'GET'])
 def naive_bayes():
 
     if request.method == 'POST':
@@ -157,7 +158,7 @@ def naive_bayes():
     return render_template("result.html", image = outimage)
 
 #Taking a user provided image and turning it into a binary mask version of the same image
-@app.route('/bmresult', methods =['POST', 'GET'])
+@app.route('/binarymaskresult', methods =['POST', 'GET'])
 def binary_mask():
 
     if request.method == 'POST':

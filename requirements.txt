@@ -1,0 +1,23 @@
+PlantCV, including the following dependancies:
+-Python (tested with versions 2.7 and 3.6)
+-argparse
+-cv2 (we recommend 2.4.14+ or 3.3+)
+-matplotlib (requires at least 1.5, works with 2+)
+-numpy (requires at least 1.11)
+-pandas
+-pytest
+-python-dateutil
+-scikit-image
+-scipy
+-setuptools
+-OpenCV (we recommend 2.4.14+ or 3.3+)
+
+PIL
+werkzeug.utils
+json
+matplotlib.path
+itertools
+base64
+
+
+
